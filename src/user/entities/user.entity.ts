@@ -42,6 +42,7 @@ export class User extends BaseEntity {
     length: 100,
     comment: '头像',
     name: 'head_pic',
+    nullable: true,
   })
   headPic: string;
 
@@ -49,18 +50,21 @@ export class User extends BaseEntity {
     length: 20,
     comment: '手机号',
     name: 'phone_number',
+    nullable: true,
   })
   phoneNumber: string;
 
   @Column({
     comment: '是否冻结',
     name: 'is_frozen',
+    default: false,
   })
   isFrozen: boolean;
 
   @Column({
     comment: '是否管理员',
     name: 'is_admin',
+    default: false,
   })
   // boolean值会保存为0和1
   isAdmin: boolean;
