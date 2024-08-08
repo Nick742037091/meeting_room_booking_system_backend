@@ -13,6 +13,11 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { EmailService } from 'src/email/email.service';
 import { LoginUserDto } from './dto/login-user.dto';
+import {
+  RequireLogin,
+  RequirePermission,
+  UserInfo,
+} from 'src/common/decorator';
 
 @Controller('user')
 export class UserController {
@@ -75,5 +80,18 @@ export class UserController {
     } catch (e) {
       throw new UnauthorizedException('token已失效，请重新登录');
     }
+  }
+
+  @Get('aaa')
+  @RequireLogin()
+  @RequirePermission('ddd')
+  async aaa(@UserInfo() userInfo, @UserInfo('userId') userId) {
+    console.log('aaa', userInfo, userId);
+    return 'aaa';
+  }
+
+  @Get('bbb')
+  async bbb() {
+    return 'bbb';
   }
 }

@@ -9,7 +9,7 @@ import { md5 } from 'src/utils';
 import { Role } from './entities/role.entity';
 import { Permission } from './entities/permission.entity';
 import { LoginUserDto } from './dto/login-user.dto';
-import { LoginUserVo, UserInfo } from './vo/login-user.vo';
+import { JwtPayload, LoginUserVo } from './vo/login-user.vo';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -126,27 +126,19 @@ export class UserService {
       roles: user.roles.map((role) => role.name),
       permissions: user.roles.reduce((res, role) => {
         role.permissions.forEach((permission) => {
-          if (!res.includes(permission.code)) {
-            res.push(permission.code);
+          if (!res.includes(permission)) {
+            res.push(permission);
           }
         });
         return res;
-      }, [] as string[]),
+      }, [] as Permission[]),
     };
     vo.accessToken = this.createToken(vo.userInfo, false);
     vo.refreshToken = this.createToken(vo.userInfo, true);
     return vo;
   }
 
-  createToken(
-    userInfo: {
-      userId: number;
-      username: string;
-      roles: string[];
-      permissions: string[];
-    },
-    isRefreshToken: boolean,
-  ) {
+  createToken(userInfo: JwtPayload, isRefreshToken: boolean) {
     return this.jwtService.sign(
       {
         userId: userInfo.userId,
@@ -177,12 +169,12 @@ export class UserService {
       roles: user.roles.map((role) => role.name),
       permissions: user.roles.reduce((res, role) => {
         role.permissions.forEach((permission) => {
-          if (!res.includes(permission.code)) {
-            res.push(permission.code);
+          if (!res.includes(permission)) {
+            res.push(permission);
           }
         });
         return res;
-      }, [] as string[]),
+      }, [] as Permission[]),
     };
   }
 }
