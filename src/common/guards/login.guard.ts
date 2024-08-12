@@ -9,7 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 import { JwtPayload } from 'src/user/vo/login-user.vo';
-import { METADATA_KEY_LOGIN } from '../decorator';
+import { METADATA_KEY_LOGIN } from '../decorators';
 
 declare module 'express' {
   interface Request {

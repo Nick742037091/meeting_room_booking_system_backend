@@ -3,6 +3,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Post,
   Query,
   UnauthorizedException,
@@ -17,7 +19,10 @@ import {
   RequireLogin,
   RequirePermission,
   UserInfo,
-} from 'src/common/decorator';
+} from 'src/common/decorators';
+import { UserDetailVo } from './vo/user-info.vo';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -36,22 +41,17 @@ export class UserController {
 
   @Post('register')
   register(@Body(new ValidationPipe()) registerUserDto: RegisterUserDto) {
-    console.log('register', registerUserDto);
     return this.userService.register(registerUserDto);
   }
 
   @Get('register-captcha')
   async captcha(@Query('email') email: string) {
-    const code = Math.random().toString().slice(2, 8);
-
-    await this.redisService.set(`captcha_${email}`, code, 5 * 60);
-
-    await this.emailService.sendMail({
-      to: email,
-      subject: '注册验证码',
-      html: `<p>你的注册验证码是 ${code}</p>`,
+    return this.userService.sendcCaptcha({
+      email,
+      ttl: 5 * 60,
+      cachePrex: 'register',
+      subject: '注册',
     });
-    return '发送成功';
   }
 
   @Post('login')
@@ -82,11 +82,65 @@ export class UserController {
     }
   }
 
+  @Get('info')
+  @RequireLogin()
+  async info(@UserInfo('userId') userId) {
+    const user = await this.userService.findUserDetailById(userId);
+    const vo = new UserDetailVo();
+    vo.id = user.id;
+    vo.username = user.username;
+    vo.nickName = user.nickName;
+    vo.email = user.email;
+    vo.headPic = user.headPic;
+    vo.phoneNumber = user.phoneNumber;
+    vo.isFrozen = user.isFrozen;
+    vo.createTime = user.createTime;
+    return vo;
+  }
+
+  @Get('update_password/captcha')
+  async updatePasswordCaptcha(@Query('email') email: string) {
+    return this.userService.sendcCaptcha({
+      email,
+      ttl: 10 * 60,
+      cachePrex: 'update_password',
+      subject: '更新密码验证码',
+    });
+  }
+
+  @Post(['update_password', 'admin/update_password'])
+  @RequireLogin()
+  async updatePassword(
+    @UserInfo('userId') userId: number,
+    @Body() passwordDto: UpdatePasswordDto,
+  ) {
+    return await this.userService.updatePassword(userId, passwordDto);
+  }
+
+  @Get('update/captcha')
+  async updateCaptcha(@Query('email') email: string) {
+    return this.userService.sendcCaptcha({
+      email,
+      ttl: 5 * 60,
+      cachePrex: 'update',
+      subject: '更新用户信息',
+    });
+  }
+
+  @Post(['update', 'admin/update'])
+  @RequireLogin()
+  async updateUser(
+    @UserInfo('userId') userId: number,
+    @Body() passwordDto: UpdateUserDto,
+  ) {
+    return await this.userService.updateUser(userId, passwordDto);
+  }
+
   @Get('aaa')
   @RequireLogin()
   @RequirePermission('ddd')
-  async aaa(@UserInfo() userInfo, @UserInfo('userId') userId) {
-    console.log('aaa', userInfo, userId);
+  async aaa(@UserInfo('userId') userId) {
+    console.log('request aaa, userId: ', userId);
     return 'aaa';
   }
 

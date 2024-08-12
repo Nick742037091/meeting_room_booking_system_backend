@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
-import { METADATA_KEY_PERMISSION } from '../decorator';
+import { METADATA_KEY_PERMISSION } from '../decorators';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
