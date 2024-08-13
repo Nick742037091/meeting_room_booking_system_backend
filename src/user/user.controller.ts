@@ -2,9 +2,8 @@ import { JwtService } from '@nestjs/jwt';
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
-  HttpException,
-  HttpStatus,
   Post,
   Query,
   UnauthorizedException,
@@ -23,6 +22,7 @@ import {
 import { UserDetailVo } from './vo/user-info.vo';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { generateParseIntPipe } from 'src/utils';
 
 @Controller('user')
 export class UserController {
@@ -134,6 +134,35 @@ export class UserController {
     @Body() passwordDto: UpdateUserDto,
   ) {
     return await this.userService.updateUser(userId, passwordDto);
+  }
+
+  @Post('freeze')
+  async freeze(@Body('userId') userId: number) {
+    await this.userService.freezeUserById(userId);
+    return 'success';
+  }
+
+  @Get('list')
+  async list(
+    @Query('pageNo', new DefaultValuePipe(1), generateParseIntPipe('pageNo'))
+    pageNo: number,
+    @Query(
+      'pageSize',
+      new DefaultValuePipe(2),
+      generateParseIntPipe('pageSize'),
+    )
+    pageSize: number,
+    @Query('username') userName: string,
+    @Query('nickName') nickName: string,
+    @Query('email') email: string,
+  ) {
+    return await this.userService.findUserByPage(
+      pageNo,
+      pageSize,
+      userName,
+      nickName,
+      email,
+    );
   }
 
   @Get('aaa')
