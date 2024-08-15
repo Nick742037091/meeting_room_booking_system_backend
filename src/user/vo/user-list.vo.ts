@@ -1,59 +1,65 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserDetailVo {
+class User {
   @ApiProperty({
-    example: 1,
-    type: Number,
-    title: '用户ID',
+    title: '用户id',
+    type: String,
   })
   id: number;
 
   @ApiProperty({
-    example: 'xxx',
+    title: '用户名称',
     type: String,
-    title: '用户名',
   })
   username: string;
 
   @ApiProperty({
-    example: 'xxx',
+    title: '用户昵称',
     type: String,
-    title: '昵称',
   })
   nickName: string;
 
   @ApiProperty({
-    example: 'xx@qq.com',
-    type: String,
     title: '邮箱',
+    type: String,
   })
   email: string;
 
   @ApiProperty({
-    example: 'xxx',
-    type: String,
-    title: '头像',
-  })
-  headPic: string;
-
-  @ApiProperty({
-    example: '18888888888',
-    type: String,
     title: '手机号',
+    type: String,
   })
   phoneNumber: string;
 
   @ApiProperty({
-    example: false,
-    type: Boolean,
     title: '是否冻结',
+    type: Boolean,
   })
   isFrozen: boolean;
 
   @ApiProperty({
-    example: '2024-08-07T06:50:03.833Z',
-    type: Date,
+    title: '头像',
+    type: String,
+  })
+  headPic: string;
+
+  @ApiProperty({
     title: '创建时间',
+    type: Date,
   })
   createTime: Date;
+}
+
+export class UserListVo {
+  @ApiProperty({
+    type: [User],
+    title: '用户列表',
+  })
+  list: User[];
+
+  @ApiProperty({
+    type: Number,
+    title: '总数',
+  })
+  total: number;
 }

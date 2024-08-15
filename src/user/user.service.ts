@@ -260,8 +260,17 @@ export class UserService {
 
   async freezeUserById(id: number) {
     const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+    }
     user.isFrozen = true;
-    await this.userRepository.save(user);
+    try {
+      await this.userRepository.save(user);
+      return '冻结用户成功';
+    } catch (e) {
+      this.logger.error(e);
+      return '冻结用户失败';
+    }
   }
 
   async findUserByPage(
