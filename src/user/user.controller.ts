@@ -1,5 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import {
+  BadRequestException,
   Body,
   Controller,
   DefaultValuePipe,
@@ -8,6 +9,8 @@ import {
   Post,
   Query,
   UnauthorizedException,
+  UploadedFile,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -34,6 +37,10 @@ import {
 import { LoginUserVo } from './vo/login-user.vo';
 import { RefreshTokenVo } from './vo/refresh-token.vo';
 import { UserListVo } from './vo/user-list.vo';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as path from 'path';
+import { storage } from 'src/common/upload/storage';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('用户管理模块')
 @Controller('user')
@@ -43,6 +50,7 @@ export class UserController {
     private redisService: RedisService,
     private emailService: EmailService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   @Get('init-data')
@@ -348,6 +356,30 @@ export class UserController {
       nickName,
       email,
     );
+  }
+
+  @Post('uploadImage')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      // dest: 'uploads',
+      storage: storage,
+      limits: {
+        // 限制文件大小为3M
+        fileSize: 1024 * 1024 * 3,
+      },
+      fileFilter: (req, file, cb) => {
+        // 限制上传文件格式
+        const extname = path.extname(file.originalname);
+        if (['.png', '.jpg', '.gif'].includes(extname)) {
+          cb(null, true);
+        } else {
+          cb(new BadRequestException('只能上传图片'), false);
+        }
+      },
+    }),
+  )
+  uploadImage(@UploadedFile() file: Express.Multer.File) {
+    return this.configService.get('upload_host') + file.path;
   }
 
   @Get('aaa')

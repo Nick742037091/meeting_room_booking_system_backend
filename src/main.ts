@@ -5,10 +5,15 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { FormatResponseInterceptor } from './common/interceptors/format-response.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
 // import { InvokeRecordInterceptor } from './common/interceptors/invoke-record.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // 设置uploads为静态目录，可通过http协议访问
+  app.useStaticAssets('uploads', {
+    prefix: '/uploads',
+  });
   // 使用默认的dto校验管道
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new FormatResponseInterceptor());
