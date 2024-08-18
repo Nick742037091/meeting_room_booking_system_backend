@@ -10,6 +10,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { LoginGuard } from './common/guards/login.guard';
 import { PermissionGuard } from './common/guards/permission.guard';
+import { MettingRoomModule } from './metting-room/metting-room.module';
+import { envBoolean } from './utils';
 
 @Module({
   imports: [
@@ -26,8 +28,9 @@ import { PermissionGuard } from './common/guards/permission.guard';
           username: configService.get('mysql_username'),
           password: configService.get('mysql_password'),
           database: configService.get('mysql_database'),
-          synchronize: Boolean(configService.get('mysql_synchronize')),
-          logging: Boolean(configService.get('mysql_logging')),
+          synchronize: envBoolean(configService.get('mysql_synchronize')),
+          logging: envBoolean(configService.get('mysql_logging')),
+          // TODO autoLoadEntities 会导致产生很多SQL日志，如何优化
           autoLoadEntities: true,
           poolSize: 10,
           connectorPackage: 'mysql2',
@@ -53,6 +56,7 @@ import { PermissionGuard } from './common/guards/permission.guard';
     UserModule,
     RedisModule,
     EmailModule,
+    MettingRoomModule,
   ],
   controllers: [AppController],
   providers: [

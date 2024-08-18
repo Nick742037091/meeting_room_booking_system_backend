@@ -5,9 +5,8 @@ export class LoginUserDto {
     message: '用户名不能为空',
   })
   @ApiProperty({
-    example: 'zhangsan',
     type: String,
-    description: '用户名',
+    title: '用户名',
   })
   username: string;
 
@@ -15,9 +14,8 @@ export class LoginUserDto {
     message: '密码不能为空',
   })
   @ApiProperty({
-    example: '123456',
     type: String,
-    description: '密码',
+    title: '密码',
   })
   password: string;
 }

@@ -14,3 +14,7 @@ export function generateParseIntPipe(name) {
     },
   });
 }
+
+export const envBoolean = (val: string) => {
+  return Boolean(JSON.parse(val));
+};

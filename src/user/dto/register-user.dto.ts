@@ -6,7 +6,7 @@ export class RegisterUserDto {
   })
   @ApiProperty({
     type: String,
-    description: '用户名',
+    title: '用户名',
   })
   username: string;
 
@@ -19,7 +19,7 @@ export class RegisterUserDto {
   @ApiProperty({
     minLength: 6,
     type: String,
-    description: '密码',
+    title: '密码',
   })
   password: string;
 
@@ -28,7 +28,7 @@ export class RegisterUserDto {
   })
   @ApiProperty({
     type: String,
-    description: '昵称',
+    title: '昵称',
   })
   nickName: string;
 
@@ -43,7 +43,7 @@ export class RegisterUserDto {
   )
   @ApiProperty({
     type: String,
-    description: '邮箱',
+    title: '邮箱',
   })
   email: string;
 
@@ -52,7 +52,7 @@ export class RegisterUserDto {
   })
   @ApiProperty({
     type: String,
-    description: '验证码',
+    title: '验证码',
   })
   captcha: string;
 }

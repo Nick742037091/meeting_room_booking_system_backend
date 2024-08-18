@@ -25,8 +25,8 @@ export class UpdatePasswordDto {
     },
   )
   @ApiProperty({
-    title: '邮箱',
     type: String,
+    title: '邮箱',
   })
   email: string;
 
@@ -34,9 +34,8 @@ export class UpdatePasswordDto {
     message: '验证码不能为空',
   })
   @ApiProperty({
-    example: '123456',
-    title: '验证码',
     type: String,
+    title: '验证码',
   })
   captcha: string;
 }

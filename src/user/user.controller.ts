@@ -30,6 +30,7 @@ import { generateParseIntPipe } from 'src/utils';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiOperation,
   ApiQuery,
   ApiResponse,
   ApiTags,
@@ -53,12 +54,14 @@ export class UserController {
     private configService: ConfigService,
   ) {}
 
+  @ApiOperation({ summary: '初始化用户数据' })
   @Get('init-data')
   async initData() {
     await this.userService.initData();
     return '初始化成功';
   }
 
+  @ApiOperation({ summary: '获取注册验证码' })
   @ApiQuery({
     name: 'email',
     type: String,
@@ -71,7 +74,7 @@ export class UserController {
     type: String,
   })
   @Get('register-captcha')
-  async captcha(@Query('email') email: string) {
+  async registerCaptcha(@Query('email') email: string) {
     return this.userService.sendcCaptcha({
       email,
       ttl: 5 * 60,
@@ -80,6 +83,7 @@ export class UserController {
     });
   }
 
+  @ApiOperation({ summary: '用户注册' })
   @ApiBody({
     type: RegisterUserDto,
   })
@@ -98,6 +102,7 @@ export class UserController {
     return this.userService.register(registerUserDto);
   }
 
+  @ApiOperation({ summary: '用户登录' })
   @ApiBody({
     type: LoginUserDto,
   })
@@ -117,6 +122,7 @@ export class UserController {
     return vo;
   }
 
+  @ApiOperation({ summary: '管理员登录' })
   @ApiBody({
     type: LoginUserDto,
   })
@@ -136,6 +142,7 @@ export class UserController {
     return vo;
   }
 
+  @ApiOperation({ summary: '刷新token' })
   @ApiQuery({
     name: 'refreshToken',
     type: String,
@@ -169,6 +176,7 @@ export class UserController {
     }
   }
 
+  @ApiOperation({ summary: '获取用户信息' })
   @ApiBearerAuth()
   @ApiResponse({
     status: HttpStatus.OK,
@@ -191,6 +199,7 @@ export class UserController {
     return vo;
   }
 
+  @ApiOperation({ summary: '获取修改密码验证码' })
   @ApiQuery({
     name: 'email',
     type: String,
@@ -212,6 +221,7 @@ export class UserController {
     });
   }
 
+  @ApiOperation({ summary: '修改密码' })
   @ApiBearerAuth()
   @ApiBody({
     type: UpdatePasswordDto,
@@ -235,6 +245,7 @@ export class UserController {
     return await this.userService.updatePassword(userId, passwordDto);
   }
 
+  @ApiOperation({ summary: '获取修改用户信息验证码' })
   @ApiBearerAuth()
   @ApiQuery({
     name: 'email',
@@ -258,6 +269,7 @@ export class UserController {
     });
   }
 
+  @ApiOperation({ summary: '修改用户信息' })
   @ApiBearerAuth()
   @ApiBody({
     type: UpdateUserDto,
@@ -281,6 +293,7 @@ export class UserController {
     return await this.userService.updateUser(userId, passwordDto);
   }
 
+  @ApiOperation({ summary: '冻结用户' })
   @ApiBearerAuth()
   @ApiResponse({
     status: HttpStatus.OK,
@@ -298,6 +311,7 @@ export class UserController {
     return 'success';
   }
 
+  @ApiOperation({ summary: '用户列表' })
   @ApiBearerAuth()
   @ApiQuery({
     name: 'pageNo',
@@ -349,6 +363,10 @@ export class UserController {
     @Query('nickName') nickName: string,
     @Query('email') email: string,
   ) {
+    // TODO 封装列表参数统一校验装饰器
+    if (pageNo < 1) {
+      throw new BadRequestException('页码最小为 1');
+    }
     return await this.userService.findUserByPage(
       pageNo,
       pageSize,
@@ -358,6 +376,7 @@ export class UserController {
     );
   }
 
+  @ApiOperation({ summary: '上传图片' })
   @Post('uploadImage')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -382,6 +401,7 @@ export class UserController {
     return this.configService.get('upload_host') + file.path;
   }
 
+  @ApiOperation({ summary: 'aaa' })
   @Get('aaa')
   @RequireLogin()
   @RequirePermission('ddd')
@@ -390,6 +410,7 @@ export class UserController {
     return 'aaa';
   }
 
+  @ApiOperation({ summary: 'bbb' })
   @Get('bbb')
   async bbb() {
     return 'bbb';
