@@ -1,7 +1,7 @@
 import { BaseEntity } from 'src/common/database/base.entity';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('meeting_room')
+@Entity('meeting_rooms', { comment: '会议室' })
 export class MeetingRoom extends BaseEntity {
   @PrimaryGeneratedColumn({
     comment: '会议室id',

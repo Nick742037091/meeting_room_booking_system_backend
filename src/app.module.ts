@@ -12,6 +12,7 @@ import { LoginGuard } from './common/guards/login.guard';
 import { PermissionGuard } from './common/guards/permission.guard';
 import { MettingRoomModule } from './metting-room/metting-room.module';
 import { envBoolean } from './utils';
+import { BookingModule } from './booking/booking.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { envBoolean } from './utils';
     RedisModule,
     EmailModule,
     MettingRoomModule,
+    BookingModule,
   ],
   controllers: [AppController],
   providers: [
