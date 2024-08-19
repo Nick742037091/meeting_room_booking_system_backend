@@ -1,11 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Booking } from './entities/booking.entity';
-import { Between, Like, Repository } from 'typeorm';
+import { Booking, BookingStatus } from './entities/booking.entity';
+import {
+  Between,
+  LessThanOrEqual,
+  Like,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { MeetingRoom } from 'src/metting-room/entities/metting-room.entity';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class BookingService {
@@ -16,6 +23,7 @@ export class BookingService {
     private userRepository: Repository<User>,
     @InjectRepository(MeetingRoom)
     private meetingRoomRepository: Repository<MeetingRoom>,
+    private emailService: EmailService,
   ) {}
 
   async initData() {
@@ -116,8 +124,71 @@ export class BookingService {
     };
   }
 
-  create(createBookingDto: CreateBookingDto) {
-    return 'This action adds a new booking';
+  async create(createBookingDto: CreateBookingDto, userId: number) {
+    const meetingRoom = await this.meetingRoomRepository.findOneBy({
+      id: createBookingDto.meetingRoomId,
+    });
+    if (!meetingRoom) {
+      throw new BadRequestException('会议室不存在');
+    }
+    const user = await this.userRepository.findOneBy({ id: userId });
+    const booking = new Booking();
+    booking.startTime = new Date(createBookingDto.startTime);
+    booking.endTime = new Date(createBookingDto.endTime);
+    booking.status = BookingStatus.APPLYING;
+    booking.user = user;
+    booking.meetingRoom = meetingRoom;
+
+    const existBooking = await this.bookingRepository.findOneBy({
+      meetingRoom: {
+        id: createBookingDto.meetingRoomId,
+      },
+      startTime: LessThanOrEqual(booking.startTime),
+      endTime: MoreThanOrEqual(booking.endTime),
+    });
+    if (existBooking) {
+      throw new BadRequestException('该时间段已被预约');
+    }
+
+    const newBooking = await this.bookingRepository.save(booking);
+    return newBooking.id;
+  }
+
+  async apply(id: number) {
+    await this.bookingRepository.update(id, {
+      status: BookingStatus.APPROVED,
+    });
+    return 'success';
+  }
+
+  async reject(id: number) {
+    await this.bookingRepository.update(id, {
+      status: BookingStatus.REJECTED,
+    });
+    return 'success';
+  }
+
+  async unbind(id: number) {
+    await this.bookingRepository.update(id, {
+      status: BookingStatus.CANCELED,
+    });
+    return 'success';
+  }
+
+  async urge(id: number) {
+    const booking = await this.bookingRepository.findOne({
+      where: { id },
+      relations: { user: true },
+    });
+    if (!booking) {
+      throw new BadRequestException('预约不存在');
+    }
+
+    this.emailService.sendMail({
+      to: booking.user.email,
+      subject: `预定申请催办提醒`,
+      html: `id 为 ${id} 的预定申请正在等待审批`,
+    });
   }
 
   findAll() {

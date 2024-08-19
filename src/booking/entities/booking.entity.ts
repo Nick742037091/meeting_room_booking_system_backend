@@ -9,6 +9,13 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+export enum BookingStatus {
+  APPLYING = 0,
+  APPROVED = 1,
+  REJECTED = 2,
+  CANCELED = 3,
+}
+
 @Entity('booking', { comment: '预定表' })
 export class Booking extends BaseEntity {
   @PrimaryGeneratedColumn({ comment: '预定id' })
