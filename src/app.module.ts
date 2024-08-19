@@ -10,9 +10,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { LoginGuard } from './common/guards/login.guard';
 import { PermissionGuard } from './common/guards/permission.guard';
-import { MettingRoomModule } from './metting-room/metting-room.module';
+import { MettingRoomModule } from './meeting-room/meeting-room.module';
 import { envBoolean } from './utils';
 import { BookingModule } from './booking/booking.module';
+import { StatisticModule } from './statistic/statistic.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { BookingModule } from './booking/booking.module';
     EmailModule,
     MettingRoomModule,
     BookingModule,
+    StatisticModule,
   ],
   controllers: [AppController],
   providers: [

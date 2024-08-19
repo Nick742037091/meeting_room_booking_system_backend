@@ -1,5 +1,5 @@
 import { BaseEntity } from 'src/common/database/base.entity';
-import { MeetingRoom } from 'src/metting-room/entities/metting-room.entity';
+import { MeetingRoom } from 'src/meeting-room/entities/meeting-room.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,

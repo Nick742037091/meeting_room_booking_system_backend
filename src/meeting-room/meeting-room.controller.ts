@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   ValidationPipe,
@@ -12,7 +11,7 @@ import {
   BadRequestException,
   Put,
 } from '@nestjs/common';
-import { MettingRoomService } from './metting-room.service';
+import { MeetingRoomService } from './meeting-room.service';
 import { CreateMettingRoomDto } from './dto/create-metting-room.dto';
 import { UpdateMettingRoomDto } from './dto/update-metting-room.dto';
 import {
@@ -28,8 +27,8 @@ import { RequireLogin } from 'src/common/decorators';
 @Controller('metting-room')
 @ApiBearerAuth()
 @RequireLogin()
-export class MettingRoomController {
-  constructor(private readonly mettingRoomService: MettingRoomService) {}
+export class MeetingRoomController {
+  constructor(private readonly mettingRoomService: MeetingRoomService) {}
 
   @ApiOperation({ summary: '初始化会议室数据' })
   @Get('init-data')
