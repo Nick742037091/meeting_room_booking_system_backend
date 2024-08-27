@@ -2,7 +2,7 @@ import { FormatResponseExceptionFilter } from './common/exception-filters/format
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { FormatResponseInterceptor } from './common/interceptors/format-response.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -32,5 +32,7 @@ async function bootstrap() {
   SwaggerModule.setup('api-doc', app, document);
   const configService = app.get(ConfigService);
   await app.listen(configService.get('nest_server_port'));
+  const logger = new Logger('NestApplication');
+  logger.log(`Server running on ${await app.getUrl()}`);
 }
 bootstrap();
